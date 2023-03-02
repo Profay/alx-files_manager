@@ -1,5 +1,6 @@
 import { createClient } from 'redis';
-client = createClient();
+
+const client = createClient();
 
 
 class RedisClient {
