@@ -1,38 +1,38 @@
-const { MongoClient } = require('mongodb');
+import { MongoClient } from 'mongodb';
 
 class DBClient {
-  constructor() {
-    const host = process.env.DB_HOST || 'localhost';
-    const port = parseInt(process.env.DB_PORT, 10) || 27017;
-    const database = process.env.DB_DATABASE || 'files_manager';
-    const url = `mongodb://${host}:${port}/${database}`;
-    this.client = new MongoClient(url);
-  }
-
+  #db;
   async connect() {
-    await this.client.connect();
-    this.db = this.client.db();
+    const host = process.env.DB_HOST || 'localhost';
+    const port = process.env.DB_PORT || '27017';
+    const database = process.env.DB_DATABASE || 'files_manager';
+
+    const uri = `mongodb://${host}:${port}`;
+
+    const client = new MongoClient(uri, { useUnifiedTopology: true });
+    await client.connect();
+
+    this.#db = client.db(database);
   }
 
-  async isAlive() {
-    try {
-      await this.client.db().admin().ping();
-      return true;
-    } catch (err) {
-      return false;
-    }
+  isAlive() {
+    return !!this.#db;
   }
 
   async nbUsers() {
-    const collection = this.db.collection('users');
-    return collection.countDocuments();
+    const count = await this.#db.collection('users').countDocuments();
+    return count;
   }
 
   async nbFiles() {
-    const collection = this.db.collection('files');
-    return collection.countDocuments();
+    const count = await this.#db.collection('files').countDocuments();
+    return count;
   }
 }
 
 const dbClient = new DBClient();
-module.exports = dbClient;
+dbClient.connect()
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.error('Failed to connect to MongoDB', err));
+
+export default dbClient;
