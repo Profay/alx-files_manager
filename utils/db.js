@@ -1,39 +1,58 @@
-import { MongoClient } from 'mongodb';
+const { MongoClient } = require('mongodb');
 
 class DBClient {
-  #db;
-  async connect() {
+  constructor() {
     const host = process.env.DB_HOST || 'localhost';
-    const port = process.env.DB_PORT || '27017';
+    const port = process.env.DB_PORT || 27017;
     const database = process.env.DB_DATABASE || 'files_manager';
 
-    const uri = `mongodb://${host}:${port}`;
+    const url = `mongodb://${host}:${port}/${database}`;
 
-    const client = new MongoClient(uri, { useUnifiedTopology: true });
-    await client.connect();
+    this.client = new MongoClient(url, { useNewUrlParser: true });
+    this.db = null;
+  }
 
-    this.#db = client.db(database);
+  async connect() {
+    try {
+      await this.client.connect();
+      this.db = this.client.db();
+      console.log('DBClient: MongoDB connection established');
+    } catch (error) {
+      console.error(`DBClient: Failed to connect to MongoDB: ${error}`);
+      throw error;
+    }
+  }
+
+  async close() {
+    try {
+      await this.client.close();
+      console.log('DBClient: MongoDB connection closed');
+    } catch (error) {
+      console.error(`DBClient: Failed to close MongoDB connection: ${error}`);
+      throw error;
+    }
   }
 
   isAlive() {
-    return !!this.#db;
+    return this.db !== null;
   }
 
   async nbUsers() {
-    const count = await this.#db.collection('users').countDocuments();
+    if (!this.isAlive()) return 0;
+    const collection = this.db.collection('users');
+    const count = await collection.countDocuments();
     return count;
   }
 
   async nbFiles() {
-    const count = await this.#db.collection('files').countDocuments();
+    if (!this.isAlive()) return 0;
+    const collection = this.db.collection('files');
+    const count = await collection.countDocuments();
     return count;
   }
 }
 
 const dbClient = new DBClient();
-dbClient.connect()
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('Failed to connect to MongoDB', err));
+dbClient.connect();
 
-export default dbClient;
-
+module.exports = dbClient;
