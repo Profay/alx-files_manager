@@ -1,5 +1,5 @@
-const { dbClient } = require('./utils/db');
-const { redisClient } = require('./utils/redis');
+const { dbClient } = require('../utils/db');
+const { redisClient } = require('../utils/redis');
 
 async function getStatus(req, res) {
     const redisAlive = await redisClient.isAlive();
