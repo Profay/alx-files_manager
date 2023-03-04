@@ -1,5 +1,6 @@
 const express = require('express');
 const AppController = require('../controllers/AppController');
+
 const route = express.Router();
 
 route.get('/status', AppController.getStatus);
