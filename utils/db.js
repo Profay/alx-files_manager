@@ -1,7 +1,6 @@
 import { MongoClient } from 'mongodb';
 
 class DBClient {
-  #db;
   async connect() {
     const host = process.env.DB_HOST || 'localhost';
     const port = process.env.DB_PORT || '27017';
@@ -12,20 +11,20 @@ class DBClient {
     const client = new MongoClient(uri, { useUnifiedTopology: true });
     await client.connect();
 
-    this.#db = client.db(database);
+    this.db = client.db(database);
   }
 
   isAlive() {
-    return !!this.#db;
+    return !!this.db;
   }
 
   async nbUsers() {
-    const count = await this.#db.collection('users').countDocuments();
+    const count = await this.db.collection('users').countDocuments();
     return count;
   }
 
   async nbFiles() {
-    const count = await this.#db.collection('files').countDocuments();
+    const count = await this.db.collection('files').countDocuments();
     return count;
   }
 }
