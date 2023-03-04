@@ -4,10 +4,9 @@ const app = express();
 
 
 const port = process.env.PORT || 5000;
-const localhost = process.env.LOCALHOST || 'localhost';
 
 app.use('/', routes);
 
-app.listen(port, localhost, () => {
+app.listen(port, () => {
     console.log(`listening on port ${port}`);
 });
