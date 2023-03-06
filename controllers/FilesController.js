@@ -92,7 +92,7 @@ class FilesController {
             },).then((result) => {
                 res.status(201).json({
                 id: result.insertedId,
-                userId: users.id,
+                userId: user._id,
                 name,
                 type,
                 isPublic,
@@ -101,7 +101,7 @@ class FilesController {
             );
             if (type === 'image') {
                 fileQueue.add({
-                    userId: users.id,
+                    userId: user._id,
                     fieldId: result.insertedId,
                 },
                 );
