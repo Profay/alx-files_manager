@@ -16,7 +16,7 @@ class FilesController {
         if (user_id) {
             const users = dbClient.db.collections('users');
             const idObject = new ObjectID(user_id);
-            const user = users.findOne({ _id: idObject });
+            const user = await users.findOne({ _id: idObject });
             if (!user) {
                 return null;
             }
