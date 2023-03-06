@@ -25,11 +25,11 @@ class FilesController {
         return null;
     }
     static async PostUpload(req, res) {
-        const user = await FilesController.get_user(request);
+        const user = await FilesController.get_user(req);
         if (!user) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
-        const { name, type, parentId = 0, isPublic = false, data } = request.body;
+        const { name, type, parentId = 0, isPublic = false, data } = req.body;
         if (!name) {
             return res.status(400).json({ error: 'Missing name' });
         }
