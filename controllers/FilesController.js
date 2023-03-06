@@ -9,7 +9,7 @@ import Queue from "bull";
 const fileQueue = new Queue('fileQueue', 'redis://127.0.0.1:6379');
 
 class FilesController {
-        static async getUser(request) {
+        static async get_user(request) {
           const token = request.header('X-Token');
           const key = `auth_${token}`;
           const userId = await redisClient.get(key);
@@ -26,7 +26,7 @@ class FilesController {
         }
 
 
-        
+
     static async PostUpload(req, res) {
         const user = await FilesController.get_user(req);
         if (!user) {
