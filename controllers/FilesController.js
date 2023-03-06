@@ -6,24 +6,27 @@ import { ObjectID } from "mongodb";
 import mime from 'mime-types';
 import Queue from "bull";
 
-
+const fileQueue = new Queue('fileQueue', 'redis://127.0.0.1:6379');
 
 class FilesController {
-    static async get_user(req) {
-        const token = req.header('X-Token');
-        const key = `auth_${token}`;
-        const user_id = await redisClient.get(key);
-        if (user_id) {
-            const users = dbClient.db.collections('users');
-            const idObject = new ObjectID(user_id);
+        static async getUser(request) {
+          const token = request.header('X-Token');
+          const key = `auth_${token}`;
+          const userId = await redisClient.get(key);
+          if (userId) {
+            const users = dbClient.db.collection('users');
+            const idObject = new ObjectID(userId);
             const user = await users.findOne({ _id: idObject });
             if (!user) {
-                return null;
+              return null;
             }
             return user;
+          }
+          return null;
         }
-        return null;
-    }
+
+
+        
     static async PostUpload(req, res) {
         const user = await FilesController.get_user(req);
         if (!user) {
