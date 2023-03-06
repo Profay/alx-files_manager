@@ -10,7 +10,7 @@ import Queue from "bull";
 
 class FilesController {
     static async get_user(req) {
-        const token = req.headers('X-Token');
+        const token = req.header('X-Token');
         const key = `auth_${token}`;
         const user_id = await redisClient.get(key);
         if (user_id) {
