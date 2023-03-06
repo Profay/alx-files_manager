@@ -42,7 +42,7 @@ class FilesController {
         if (type !== 'folder' && !data) {
             return res.status(400).json({ error: 'Missing data' });
         }
-        const files = await dbClient.db.collections('files');
+        const files = await dbClient.db.collection('files');
         if (parentId) {
             const idObject = new ObjectID(parentId);
             const file = files.findOne({_id: idObject });
