@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { promises as fs } from 'fs';
 import { ObjectID } from 'mongodb';
-import mime from 'mime-types';
 import Queue from 'bull';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
@@ -9,7 +8,7 @@ import dbClient from '../utils/db';
 const fileQueue = new Queue('fileQueue', 'redis://127.0.0.1:6379');
 
 class FilesController {
-  static async get_user(request) {
+  static async getUser(request) {
     const token = request.header('X-Token');
     const key = `auth_${token}`;
     const userId = await redisClient.get(key);
@@ -26,7 +25,7 @@ class FilesController {
   }
 
   static async PostUpload(req, res) {
-    const user = await FilesController.get_user(req);
+    const user = await FilesController.getUser(req);
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -73,11 +72,11 @@ class FilesController {
     } else {
       const filepath = process.env.FOLDER_PATH || '/tmp/files_manager';
       const filename = `${filepath}/${uuidv4()}`;
-      const buff = new Buffer.from(data, 'base64');
+      const buff = Buffer.from(data, 'base64');
       try {
         try {
           await fs.mkdir(filepath);
-        } catch (error) {}
+        } catch (error) { console.log(error); }
         await fs.writeFile(filepath, buff, 'utf8');
       } catch (error) {
         console.log(error);
