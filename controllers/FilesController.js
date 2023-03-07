@@ -49,7 +49,7 @@ class FilesController {
         return res.status(400).json({ error: 'Parent not found' });
       }
       if (file.type !== 'folder') {
-        return res.status(401).json({ error: 'Parent is not a folder' });
+        return res.status(400).json({ error: 'Parent is not a folder' });
       }
     }
     if (type === 'folder') {
@@ -59,7 +59,7 @@ class FilesController {
         type,
         isPublic,
         parentId,
-      }).then((result) => res.status(200).json({
+      }).then((result) => res.status(201).json({
         id: result.insertedId,
         userId: user._id,
         name,
