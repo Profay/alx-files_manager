@@ -97,7 +97,7 @@ class FilesController {
           name,
           type,
           isPublic,
-          parentId,
+          parentId: parentId || 0,
         });
         if (type === 'image') {
           fileQueue.add({
