@@ -24,7 +24,7 @@ class FilesController {
     return null;
   }
 
-  static async PostUpload(req, res) {
+  static async postUpload(req, res) {
     const user = await FilesController.getUser(req);
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
