@@ -88,7 +88,7 @@ class FilesController {
         name,
         type,
         isPublic,
-        parentId: pareentId || 0,
+        parentId: parentId || 0,
         localPath: filename,
       },).then((result) => {
         res.status(201).json({
