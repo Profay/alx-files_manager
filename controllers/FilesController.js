@@ -24,102 +24,99 @@ class FilesController {
     return null;
   }
 
-  static async postUpload(request, response) {
-    const user = await FilesController.getUser(request);
+  static async PostUpload(req, res) {
+    const user = await FilesController.getUser(req);
     if (!user) {
-      return response.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
-    const { name } = request.body;
-    const { type } = request.body;
-    const { parentId } = request.body;
-    const isPublic = request.body.isPublic || false;
-    const { data } = request.body;
+    const { name } = req.body;
+    const { type } = req.body;
+    const { parentId } = req.body || 0;
+    const { isPublic } = req.body.isPublic || false;
+    const { data } = req.body;
+
     if (!name) {
-      return response.status(400).json({ error: 'Missing name' });
+      return res.status(400).json({ error: 'Missing name' });
     }
-    if (!type) {
-      return response.status(400).json({ error: 'Missing type' });
+    if (!type || !['folder', 'file', 'image'].includes(type)) {
+      return res.status(400).json({ error: 'Missing type' });
     }
     if (type !== 'folder' && !data) {
-      return response.status(400).json({ error: 'Missing data' });
+      return res.status(400).json({ error: 'Missing data' });
     }
-
-    const files = dbClient.db.collection('files');
+    const files = await dbClient.db.collection('files');
     if (parentId) {
       const idObject = new ObjectID(parentId);
-      const file = await files.findOne({ _id: idObject, userId: user._id });
+      const file = files.findOne({ _id: idObject });
       if (!file) {
-        return response.status(400).json({ error: 'Parent not found' });
+        return res.status(400).json({ error: 'Parent not found' });
       }
       if (file.type !== 'folder') {
-        return response.status(400).json({ error: 'Parent is not a folder' });
+        return res.status(400).json({ error: 'Parent is not a folder' });
       }
     }
     if (type === 'folder') {
-      files.insertOne(
-        {
-          userId: user._id,
-          name,
-          type,
-          parentId: parentId || 0,
-          isPublic,
-        },
-      ).then((result) => response.status(201).json({
+      files.insertOne({
+        userid: user._id,
+        name,
+        type,
+        isPublic,
+        parentId,
+      },).then((result) => res.status(201).json({
         id: result.insertedId,
         userId: user._id,
         name,
         type,
         isPublic,
-        parentId: parentId || 0,
-      })).catch((error) => {
+        parentId,
+      })).then((error) => {
         console.log(error);
       });
     } else {
-      const filePath = process.env.FOLDER_PATH || '/tmp/files_manager';
-      const fileName = `${filePath}/${uuidv4()}`;
+      const filepath = process.env.FOLDER_PATH || '/tmp/files_manager';
+      const filename = `${filepath}/${uuidv4()}`;
       const buff = Buffer.from(data, 'base64');
-      // const storeThis = buff.toString('utf-8');
       try {
         try {
-          await fs.mkdir(filePath);
-        } catch (error) {
-        // pass. Error raised when file already exists
-        }
-        await fs.writeFile(fileName, buff, 'utf-8');
+          await fs.mkdir(filepath);
+        } catch (error) { console.log(error); }
+        await fs.writeFile(filepath, buff, 'utf8');
       } catch (error) {
         console.log(error);
       }
-      files.insertOne(
-        {
+      files.insertOne({
+        userId: user._id,
+        name,
+        type,
+        isPublic,
+        parentId,
+        localPath: filename,
+      },).then((result) => {
+        res.status(201).json({
+          id: result.insertedId,
           userId: user._id,
           name,
           type,
           isPublic,
-          parentId: parentId || 0,
-          localPath: fileName,
-        },
-      ).then((result) => {
-        response.status(201).json(
-          {
-            id: result.insertedId,
-            userId: user._id,
-            name,
-            type,
-            isPublic,
-            parentId: parentId || 0,
-          },
-        );
+          parentId,
+        });
         if (type === 'image') {
-          fileQueue.add(
-            {
-              userId: user._id,
-              fileId: result.insertedId,
-            },
-          );
+          fileQueue.add({
+            userId: user._id,
+            fieldId: result.insertedId,
+          });
         }
-      }).catch((error) => console.log(error));
+      }).catch((error) => {
+        console.log(error);
+      });
     }
     return null;
+  }
+
+  static async getShow(req, res) {
+    const user = await FilesController.getUser(req);
+    
+
   }
 }
 
