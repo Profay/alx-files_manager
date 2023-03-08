@@ -30,7 +30,7 @@ class FilesController {
     }
     const { name } = req.body;
     const { type } = req.body;
-    const { parentId } = req.body || 0;
+    const { parentId } = req.body;
     const { isPublic } = req.body.isPublic || false;
     const { data } = req.body;
 
@@ -67,7 +67,7 @@ class FilesController {
         name,
         type,
         isPublic,
-        parentId,
+        parentId: parentId,
       })).then((error) => {
         console.log(error);
       });
@@ -88,7 +88,7 @@ class FilesController {
         name,
         type,
         isPublic,
-        parentId,
+        parentId: pareentId || 0,
         localPath: filename,
       },).then((result) => {
         res.status(201).json({
