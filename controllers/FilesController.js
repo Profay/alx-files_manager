@@ -5,7 +5,6 @@ import Queue from 'bull';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
 
-const fileQueue = new Queue('fileQueue', 'redis://127.0.0.1:6379');
 
 class FilesController {
   static async getUser(request) {
