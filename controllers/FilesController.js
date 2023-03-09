@@ -183,16 +183,6 @@ class FilesController {
     });
     return null;
   }
-
-  static async getShow(req, res) {
-    const user = await FilesController.getUser(req);
-    if (!user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    
-
-  }
 }
 
 module.exports = FilesController;
