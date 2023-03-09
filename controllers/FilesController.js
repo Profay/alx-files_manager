@@ -31,7 +31,7 @@ class FilesController {
     const { name } = req.body;
     const { type } = req.body;
     const { parentId } = req.body;
-    const { isPublic } = req.body.isPublic;
+    const { isPublic } = req.body;
     const { data } = req.body;
 
     if (!name) {
