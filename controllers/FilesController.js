@@ -79,7 +79,7 @@ class FilesController {
         try {
           await fs.mkdir(filepath);
         } catch (error) { console.log(error); }
-        await fs.writeFile(filepath, buff, 'utf8');
+        await fs.writeFile(filename, buff, 'utf8');
       } catch (error) {
         console.log(error);
       }
