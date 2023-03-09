@@ -31,7 +31,7 @@ class FilesController {
     const { name } = req.body;
     const { type } = req.body;
     const { parentId } = req.body;
-    const { isPublic } = req.body.isPublic || false;
+    const { isPublic } = req.body.isPublic;
     const { data } = req.body;
 
     if (!name) {
@@ -59,14 +59,14 @@ class FilesController {
         userid: user._id,
         name,
         type,
-        isPublic,
+        isPublic: isPublic || false,
         parentId,
       },).then((result) => res.status(201).json({
         id: result.insertedId,
         userId: user._id,
         name,
         type,
-        isPublic,
+        isPublic: isPublic || false,
         parentId: parentId,
       })).then((error) => {
         console.log(error);
@@ -87,7 +87,7 @@ class FilesController {
         userId: user._id,
         name,
         type,
-        isPublic,
+        isPublic: isPublic || false,
         parentId: parentId || 0,
         localPath: filename,
       },).then((result) => {
@@ -96,7 +96,7 @@ class FilesController {
           userId: user._id,
           name,
           type,
-          isPublic,
+          isPublic: isPublic || false,
           parentId: parentId || 0,
         });
         if (type === 'image') {
